@@ -6,11 +6,11 @@
 /*   By: enpardo- <enpardo-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 23:59:34 by enpardo-          #+#    #+#             */
-/*   Updated: 2025/07/24 00:02:26 by enpardo-         ###   ########.fr       */
+/*   Updated: 2025/07/24 00:22:12 by enpardo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/pipex.h"
+#include "../inc/pipex.h"
 
 /* Function that will look for the path line inside the environment, will
  split and test each command path and then return the right one. */

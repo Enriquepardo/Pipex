@@ -6,11 +6,11 @@
 /*   By: enpardo- <enpardo-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 23:59:11 by enpardo-          #+#    #+#             */
-/*   Updated: 2025/07/24 00:02:49 by enpardo-         ###   ########.fr       */
+/*   Updated: 2025/07/24 00:49:23 by enpardo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/pipex.h"
+#include "../inc/pipex.h"
 
 /* Child process that run inside a fork, take the filein, put the output inside
  a pipe and then close with the exec function */
@@ -18,12 +18,16 @@ void	child_process(char **argv, char **envp, int *fd)
 {
 	int	filein;
 
-	filein = open(argv[1], O_RDONLY, 0777);
+	filein = open(argv[1], O_RDONLY);
 	if (filein == -1)
 		error();
-	dup2(fd[1], STDOUT_FILENO);
-	dup2(filein, STDIN_FILENO);
+	if (dup2(filein, STDIN_FILENO) < 0)
+		error();
+	if (dup2(fd[1], STDOUT_FILENO) < 0)
+		error();
+	close(filein);
 	close(fd[0]);
+	close(fd[1]);
 	execute(argv[2], envp);
 }
 
@@ -33,11 +37,15 @@ void	parent_process(char **argv, char **envp, int *fd)
 {
 	int	fileout;
 
-	fileout = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0777);
+	fileout = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fileout == -1)
 		error();
-	dup2(fd[0], STDIN_FILENO);
-	dup2(fileout, STDOUT_FILENO);
+	if (dup2(fd[0], STDIN_FILENO) < 0)
+		error();
+	if (dup2(fileout, STDOUT_FILENO) < 0)
+		error();
+	close(fileout);
+	close(fd[0]);
 	close(fd[1]);
 	execute(argv[3], envp);
 }

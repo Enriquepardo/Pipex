@@ -53,15 +53,14 @@ all: $(NAME)
 
 $(NAME): $(OBJS)
 	@ar rcs $(NAME) $(OBJS)
-	@echo "Library $(NAME) created."
+	@echo "\033[32m$(NAME) Compiled! ᕦ(\033[31m♥\033[32m_\033[31m♥\033[32m)ᕤ\n"
 
 clean:
 	@rm -f $(OBJS)
-	@echo "Object files cleaned."
 
 fclean: clean
 	@rm -f $(NAME)
-	@echo "Library $(NAME) and object files cleaned."
+	@echo "\n\033[31mDeleting EVERYTHING! ⌐(ಠ۾ಠ)¬\n"
 
 re: fclean all
 
