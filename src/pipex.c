@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: enpardo- <enpardo-@student.42madrid.com    +#+  +:+       +#+        */
+/*   By: enpardo- <enpardo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 23:59:11 by enpardo-          #+#    #+#             */
-/*   Updated: 2025/07/24 01:29:34 by enpardo-         ###   ########.fr       */
+/*   Updated: 2025/08/13 18:52:27 by enpardo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,16 @@
 
 void	child_process(char **argv, char **envp, int *fd)
 {
-	int	filein;
+	int	infile;
 
-	filein = open(argv[1], O_RDONLY);
-	if (filein == -1)
+	infile = open(argv[1], O_RDONLY | O_CREAT);
+	if (infile == -1)
 		error();
-	if (dup2(filein, STDIN_FILENO) < 0)
+	if (dup2(infile, STDIN_FILENO) < 0)
 		error();
 	if (dup2(fd[1], STDOUT_FILENO) < 0)
 		error();
-	close(filein);
+	close(infile);
 	close(fd[0]);
 	close(fd[1]);
 	execute(argv[2], envp);
@@ -31,16 +31,16 @@ void	child_process(char **argv, char **envp, int *fd)
 
 void	parent_process(char **argv, char **envp, int *fd)
 {
-	int	fileout;
+	int	outfile;
 
-	fileout = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (fileout == -1)
+	outfile = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (outfile == -1)
 		error();
 	if (dup2(fd[0], STDIN_FILENO) < 0)
 		error();
-	if (dup2(fileout, STDOUT_FILENO) < 0)
+	if (dup2(outfile, STDOUT_FILENO) < 0)
 		error();
-	close(fileout);
+	close(outfile);
 	close(fd[0]);
 	close(fd[1]);
 	execute(argv[3], envp);
@@ -65,7 +65,7 @@ int	main(int argc, char **argv, char **envp)
 	}
 	else
 	{
-		ft_putstr_fd("\033[31mError: Bad arguments\n\e[0m", 2);
+		ft_putstr_fd("Error: Bad arguments\n", 2);
 		ft_putstr_fd("Ex: ./pipex <file1> <cmd1> <cmd2> <file2>\n", 1);
 	}
 	return (0);

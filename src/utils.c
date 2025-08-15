@@ -3,28 +3,38 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: enpardo- <enpardo-@student.42madrid.com    +#+  +:+       +#+        */
+/*   By: enpardo- <enpardo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 23:59:34 by enpardo-          #+#    #+#             */
-/*   Updated: 2025/07/24 01:29:21 by enpardo-         ###   ########.fr       */
+/*   Updated: 2025/08/15 11:38:21 by enpardo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/pipex.h"
 
+char	*non_envp_exe(char *cmd)
+{
+	if (!access(cmd, X_OK))
+		return (cmd);
+	return (NULL);
+}
+
 char	*find_path(char *cmd, char **envp)
 {
 	char	**paths;
 	char	*path;
-	int		i;
 	char	*part_path;
+	int		i;
 
-	i = 0;
-	while (ft_strnstr(envp[i], "PATH", 4) == 0)
-		i++;
-	paths = ft_split(envp[i] + 5, ':');
-	i = 0;
-	while (paths[i])
+	if (!*envp || !access(cmd, X_OK))
+		return (non_envp_exe(cmd));
+	while (*envp && !ft_strnstr(*envp, "PATH", 4))
+		envp++;
+	if (!*envp)
+		return (NULL);
+	paths = ft_split(*envp + 5, ':');
+	i = -1;
+	while (paths[++i])
 	{
 		part_path = ft_strjoin(paths[i], "/");
 		path = ft_strjoin(part_path, cmd);
@@ -32,18 +42,15 @@ char	*find_path(char *cmd, char **envp)
 		if (access(path, F_OK) == 0)
 			return (path);
 		free(path);
-		i++;
-	}
-	i = -1;
-	while (paths[++i])
 		free(paths[i]);
+	}
 	free(paths);
-	return (0);
+	return (NULL);
 }
 
 void	error(void)
 {
-	perror("\033[31mError");
+	perror("Error");
 	exit(EXIT_FAILURE);
 }
 
